@@ -1,0 +1,116 @@
+# ==========================================
+# Gantry Service Example Configuration (TOML 1.0.0)
+# ==========================================
+
+# General log level for the application
+# Options: "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "TRACE"
+log_level = "INFO" # Literal String
+
+# ------------------------------------------
+# Ditto Settings
+# ------------------------------------------
+[ditto]
+toll_id = 0                  # Non-negative Integer
+namespace = "default"        # String
+policy_id = "default:policy" # String
+
+# ------------------------------------------
+# Message Converters
+# Keys: "a-to-be", "outsight"
+# Value: Boolean (Default: false)
+# ------------------------------------------
+[message_converters]
+a-to-be = false  # Boolean
+outsight = false # Boolean
+
+# ------------------------------------------
+# Envelope Formatters
+# Keys: "toll-feature", "ditto-thing"
+# Value: Boolean (Default: false)
+# ------------------------------------------
+[envelope_formatters]
+toll-feature = false # Boolean
+ditto-thing = false  # Boolean
+
+# ------------------------------------------
+# Toll Loader Settings
+# ------------------------------------------
+[toll_loader]
+# Options: "disabled", "json-file"
+backend = "disabled" # Discriminator
+
+# JSON File Toll Loader Options (only used if backend="json-file")
+# backend = "json-file"
+# filepath = "tolls.json" # Path String (default: "tolls.json")
+
+# ------------------------------------------
+# Sender Settings
+# ------------------------------------------
+[sender]
+# Options: "disabled", "mqtt", "http"
+backend = "disabled" # Discriminator
+
+# MQTT Sender Options (only used if backend="mqtt")
+# backend = "mqtt"
+# host = "localhost"          # String (min_length=1)
+# port = 1883                 # Integer (0-65535)
+# username = ""               # Optional String (null)
+# password = ""               # Optional String (null)
+# tls = false                 # Boolean
+# cafile = ""                 # Optional Path String
+# publish_topic = "telemetry" # String
+
+# HTTP Sender Options (only used if backend="http")
+# backend = "http"
+# host = "localhost"          # Non-empty String
+# port = 1883                 # Integer (0-65535)
+# username = ""               # Optional String (null)
+# password = ""               # Optional String (null)
+# tls = false                 # Boolean
+# cafile = ""                 # Optional Path String
+# client_key = ""             # Optional Path String
+# client_crt = ""             # Optional Path String
+# base_path = "/telemetry"    # String
+
+# ------------------------------------------
+# Consumers (List)
+# Showing examples for both "mqtt" and "webhook" discriminators
+# ------------------------------------------
+
+# Example 1: MQTT Consumer
+[[consumers]]
+backend = "mqtt"   # Discriminator
+enabled = true     # Boolean
+host = "127.0.0.1" # String (min_length=1)
+port = 1883        # Integer (0-65535)
+secure = false     # Boolean
+username = ""      # Optional String (null)
+password = ""      # Optional String (null)
+
+# Message Settings for MQTT Consumer (List)
+# Showing both "a-to-be" and "outsight" discriminators
+
+[[consumers.message_settings]]
+expected_message_type = "a-to-be" # Discriminator
+enabled = true                    # Boolean
+topic = "required_topic"          # Non-empty String
+source_name = "required_name"     # Non-empty String
+source_prefix = "required_prefix" # Non-empty String
+allowed_ditto_formats = []        # Set of Strings ("toll-feature", "ditto-thing")
+atobe_type = "realtime"           # Literal String ("realtime", "history")
+
+[[consumers.message_settings]]
+expected_message_type = "outsight" # Discriminator
+enabled = true                     # Boolean
+topic = "required_topic"           # Non-empty String
+source_name = "required_name"      # Non-empty String
+source_prefix = "required_prefix"  # Non-empty String
+allowed_ditto_formats = []         # Set of Strings
+
+# Example 2: Webhook Consumer
+[[consumers]]
+backend = "webhook"   # Discriminator
+enabled = true        # Boolean
+host = "127.0.0.1"    # String (min_length=1)
+port = 8000           # Integer (0-65535)
+message_settings = [] # List of MessageSettings

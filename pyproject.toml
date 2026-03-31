@@ -1,0 +1,28 @@
+[project]
+name = "gantry-service"
+version = "0.1.0"
+description = "Service for representing real world sensor data within Eclipse Ditto via Eclipse Hono"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+  "amqtt>=0.11.3",
+  "fastapi[standard]>=0.128.1",
+  "httpx>=0.28.1",
+  "loguru>=0.7.3",
+  "pydantic>=2.11.7",
+  "pydantic-settings>=2.10.1",
+]
+
+[dependency-groups]
+dev = ["mypy>=1.17.0", "ruff>=0.12.5"]
+
+[tool.mypy]
+strict = true
+plugins = ['pydantic.mypy']
+
+[[tool.mypy.overrides]]
+module = ["amqtt.client", "amqtt.contexts"]
+ignore_missing_imports = true
+
+[tool.ruff.lint]
+extend-select = ["T20"]
