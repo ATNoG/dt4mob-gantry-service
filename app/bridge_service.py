@@ -18,6 +18,7 @@ from app.settings.message_converter import MessageConverterBackend
 class BridgeService:
     def __init__(self) -> None:
         self._message_queue = get_queue()
+        self._send_queue: asyncio.Queue[DittoMessage] = asyncio.Queue()
         self._consumers = get_consumers()
         self._message_converter_store = get_message_converters()
         self._envelope_formatters = get_envelope_formatters()
@@ -36,6 +37,7 @@ class BridgeService:
 
         if self._sender:
             await self._sender.start()
+            asyncio.create_task(self._sender_loop())
 
         yield
 
@@ -73,6 +75,11 @@ class BridgeService:
         for envelope in ditto_message:
             await self._sender.send(envelope.model_dump_json().encode())
 
+    async def _sender_loop(self) -> None:
+        while True:
+            msg = await self._send_queue.get()
+            await self._send_message(msg)
+
     async def _handle_vehicle_message(self, vehicle_message: VehicleMessage) -> None:
         for formatter_backend in vehicle_message.message_settings.allowed_ditto_formats:
             formatter = self._envelope_formatters.get(formatter_backend)
@@ -80,7 +87,7 @@ class BridgeService:
                 continue
             ditto_message = await formatter.format(vehicle_message)
             logger.trace("Ditto message: {}", ditto_message)
-            await self._send_message(ditto_message)
+            await self._send_queue.put(ditto_message)
 
     async def run(self) -> None:
         async with self._resources():
@@ -90,6 +97,7 @@ class BridgeService:
             logger.info("Service running")
             try:
                 async for message in self._messages():
+                    logger.trace("Queue Length: {}", self._message_queue.qsize())
                     logger.info(
                         "Message received from sensor {source_name}, on topic {topic}",
                         source_name=message.message_settings.source_name,

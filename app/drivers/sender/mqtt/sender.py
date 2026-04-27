@@ -11,7 +11,7 @@ class MQTTSenderInterface(SenderInterface):
         self.mqttc = MQTTClient(
             config=ClientConfig(
                 reconnect_retries=-1,
-                check_hostname=False,
+                check_hostname=None,
                 connection=ConnectionConfig(
                     cafile=mqtt_settings.cafile,
                     uri=mqtt_settings.get_uri(),

@@ -23,7 +23,7 @@ class HTTPSenderInterface(SenderInterface):
             )
         self.httpx_client = httpx.AsyncClient(
             base_url=http_settings.get_url(),
-            verify=ctx,
+            verify=False,
             auth=auth,
         )
 

@@ -12,7 +12,6 @@ from app.settings.consumer import MQTTConsumerSettings
 
 
 class MQTTConsumerInterface(ConsumerInterface):
-
     def __init__(
         self,
         *,
