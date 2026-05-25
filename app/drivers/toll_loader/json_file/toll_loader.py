@@ -36,4 +36,14 @@ class JsonFileTollLoader(TollLoaderInterface):
                 .model_dump_json(exclude_unset=True)
                 .encode()
             )
+            for sensor in toll.sensors:
+                await sender.send(
+                    DittoProtocolEnvelope(
+                        topic=f"{settings.ditto.namespace}/toll-{toll.id}/things/twin/commands/modify",
+                        path=f"/features/{sensor}/properties",
+                        value={},
+                    )
+                    .model_dump_json(exclude_unset=True)
+                    .encode()
+                )
         logger.info("Tolls loaded")

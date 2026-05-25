@@ -22,7 +22,8 @@ class MQTTConsumerInterface(ConsumerInterface):
         self.settings = advanced_settings
         self.mqttc = MQTTClient(
             config=ClientConfig(
-                connection=ConnectionConfig(uri=self.settings.get_uri())
+                connection=ConnectionConfig(uri=self.settings.get_uri()),
+                reconnect_retries=-1,
             )
         )
         self.queue = queue
