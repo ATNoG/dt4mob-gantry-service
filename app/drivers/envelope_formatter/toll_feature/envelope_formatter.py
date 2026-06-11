@@ -39,7 +39,7 @@ class TollFeatureEnvelopeFormatter(EnvelopeFormatterInterface):
 
         message = [
             DittoProtocolEnvelope(
-                topic=f"{settings.ditto.namespace}/toll-{settings.ditto.toll_id}/things/twin/commands/modify",
+                topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:toll-{settings.ditto.toll_id}/things/twin/commands/modify",
                 headers=Headers(correlation_id=correlation_id),
                 path=f"/features/{data_message.message_settings.source_name}/properties/{data_message.id}",
                 value=data_message.data,
@@ -52,7 +52,7 @@ class TollFeatureEnvelopeFormatter(EnvelopeFormatterInterface):
                 message.extend(
                     (
                         DittoProtocolEnvelope(
-                            topic=f"{settings.ditto.namespace}/toll-{settings.ditto.toll_id}/things/twin/commands/delete",
+                            topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:toll-{settings.ditto.toll_id}/things/twin/commands/delete",
                             headers=Headers(correlation_id=correlation_id),
                             path=f"/features/{data_message.message_settings.source_name}/properties/{id}",
                         )
@@ -70,7 +70,7 @@ class TollFeatureEnvelopeFormatter(EnvelopeFormatterInterface):
 
         message = [
             DittoProtocolEnvelope(
-                topic=f"{settings.ditto.namespace}/toll-{settings.ditto.toll_id}/things/twin/commands/delete",
+                topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:toll-{settings.ditto.toll_id}/things/twin/commands/delete",
                 headers=Headers(correlation_id=correlation_id),
                 path=f"/features/{delete_message.message_settings.source_name}/properties/{delete_message.id}",
             )
@@ -79,7 +79,7 @@ class TollFeatureEnvelopeFormatter(EnvelopeFormatterInterface):
         if delete_message.data is not None:
             message.append(
                 DittoProtocolEnvelope(
-                    topic=f"{settings.ditto.namespace}/toll-{settings.ditto.toll_id}/things/twin/commands/modify",
+                    topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:toll-{settings.ditto.toll_id}/things/twin/commands/modify",
                     headers=Headers(correlation_id=correlation_id),
                     path=f"/features/{delete_message.message_settings.source_name}/properties/historic",
                     value=delete_message.data,

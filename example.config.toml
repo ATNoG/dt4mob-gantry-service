@@ -12,6 +12,7 @@ log_level = "INFO" # Literal String
 [ditto]
 toll_id = 0                  # Non-negative Integer
 namespace = "default"        # String
+subject = "test"             # String
 policy_id = "default:policy" # String
 
 # ------------------------------------------

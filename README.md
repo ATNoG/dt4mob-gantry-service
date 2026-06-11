@@ -93,7 +93,7 @@ A specialized module for loading tolling-specific metadata.
 
 Configures metadata for integration with Eclipse Ditto digital twins.
 
-- **Fields**: `toll_id` (Non-negative integer), `namespace`, and `policy_id`.
+- **Fields**: `toll_id` (Non-negative integer), `namespace`, `subject`, and `policy_id`.
 
 ## More information
 

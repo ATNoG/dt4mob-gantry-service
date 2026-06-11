@@ -19,7 +19,7 @@ class JsonFileTollLoader(TollLoaderInterface):
         for toll in tolls:
             await sender.send(
                 DittoProtocolEnvelope(
-                    topic=f"{settings.ditto.namespace}/toll-{toll.id}/things/twin/commands/create",
+                    topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:toll-{toll.id}/things/twin/commands/create",
                     path="/",
                     value={
                         "policyId": settings.ditto.policy_id,
@@ -39,7 +39,7 @@ class JsonFileTollLoader(TollLoaderInterface):
             for sensor in toll.sensors:
                 await sender.send(
                     DittoProtocolEnvelope(
-                        topic=f"{settings.ditto.namespace}/toll-{toll.id}/things/twin/commands/modify",
+                        topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:toll-{toll.id}/things/twin/commands/modify",
                         path=f"/features/{sensor}/properties",
                         value={},
                     )

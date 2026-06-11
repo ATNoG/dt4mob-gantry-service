@@ -64,7 +64,7 @@ class DittoThingEnvelopeFormatter(EnvelopeFormatterInterface):
         id = data_message.id
 
         update_envelope = DittoProtocolEnvelope(
-            topic=f"{settings.ditto.namespace}/{data_message.prefix_id()}/things/twin/commands/modify",
+            topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:{data_message.prefix_id()}/things/twin/commands/modify",
             headers=Headers(correlation_id=correlation_id),
             path="/features/State/properties/",
             value=data_message.data,
@@ -72,7 +72,7 @@ class DittoThingEnvelopeFormatter(EnvelopeFormatterInterface):
 
         expire_at = datetime.now(tz=timezone.utc) + timedelta(seconds=30)
         update_expiry = DittoProtocolEnvelope(
-            topic=f"{settings.ditto.namespace}/{data_message.prefix_id()}/things/twin/commands/modify",
+            topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:{data_message.prefix_id()}/things/twin/commands/modify",
             headers=Headers(correlation_id=correlation_id),
             path="/attributes/expiry_ts",
             value=expire_at,
@@ -89,7 +89,7 @@ class DittoThingEnvelopeFormatter(EnvelopeFormatterInterface):
 
         future_id = data_message.prefix_id(future_thing.attributes.id)
         future_envelope = DittoProtocolEnvelope(
-            topic=f"{settings.ditto.namespace}/{future_id}/things/twin/commands/create",
+            topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:{future_id}/things/twin/commands/create",
             headers=Headers(correlation_id=correlation_id),
             path="/",
             value=future_thing,
@@ -108,7 +108,7 @@ class DittoThingEnvelopeFormatter(EnvelopeFormatterInterface):
                 message.extend(
                     (
                         DittoProtocolEnvelope(
-                            topic=f"{settings.ditto.namespace}/{data_message.prefix_id(id)}/things/twin/commands/delete",
+                            topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:{data_message.prefix_id(id)}/things/twin/commands/delete",
                             headers=Headers(correlation_id=correlation_id),
                             path="/",
                         )
@@ -125,7 +125,7 @@ class DittoThingEnvelopeFormatter(EnvelopeFormatterInterface):
         self.future_ids.discard(delete_message.id)
         return [
             DittoProtocolEnvelope(
-                topic=f"{settings.ditto.namespace}/{delete_message.prefix_id()}/things/twin/commands/delete",
+                topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:{delete_message.prefix_id()}/things/twin/commands/delete",
                 headers=Headers(correlation_id=correlation_id),
                 path="/",
             )
