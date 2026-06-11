@@ -26,6 +26,7 @@ class VehicleDataMessage(BaseVehicleMessage):
 
 class VehicleDeleteMessage(BaseVehicleMessage):
     message_type: Literal[VehicleMessageType.DELETE] = VehicleMessageType.DELETE
+    data: Optional[Dict[str, JsonValue]] = None
 
 
 type VehicleMessage = Annotated[

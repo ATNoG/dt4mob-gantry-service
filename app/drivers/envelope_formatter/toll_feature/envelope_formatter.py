@@ -67,13 +67,26 @@ class TollFeatureEnvelopeFormatter(EnvelopeFormatterInterface):
     def _handle_delete(self, delete_message: VehicleDeleteMessage) -> DittoMessage:
         correlation_id = str(uuid.uuid4())
         self._existing_ids.discard(delete_message.id)
-        return [
+
+        message = [
             DittoProtocolEnvelope(
                 topic=f"{settings.ditto.namespace}/toll-{settings.ditto.toll_id}/things/twin/commands/delete",
                 headers=Headers(correlation_id=correlation_id),
                 path=f"/features/{delete_message.message_settings.source_name}/properties/{delete_message.id}",
             )
         ]
+
+        if delete_message.data is not None:
+            message.append(
+                DittoProtocolEnvelope(
+                    topic=f"{settings.ditto.namespace}/toll-{settings.ditto.toll_id}/things/twin/commands/modify",
+                    headers=Headers(correlation_id=correlation_id),
+                    path=f"/features/{delete_message.message_settings.source_name}/properties/historic",
+                    value=delete_message.data,
+                )
+            )
+
+        return message
 
     async def format(self, vehicle_message: VehicleMessage) -> DittoMessage:
         match vehicle_message.message_type:
