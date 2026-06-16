@@ -94,3 +94,16 @@ class TollFeatureEnvelopeFormatter(EnvelopeFormatterInterface):
                 return self._handle_data(vehicle_message)  # ty:ignore[invalid-argument-type]
             case VehicleMessageType.DELETE:
                 return self._handle_delete(vehicle_message)  # ty:ignore[invalid-argument-type]
+
+    async def delete_all(self, sources: list[str]) -> DittoMessage:
+        correlation_id = str(uuid.uuid4())
+        message = [
+            DittoProtocolEnvelope(
+                topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:toll-{settings.ditto.toll_id}/things/twin/commands/delete",
+                headers=Headers(correlation_id=correlation_id),
+                path=f"/features/{source}/properties",
+                value={},
+            )
+            for source in sources
+        ]
+        return message

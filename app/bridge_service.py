@@ -1,4 +1,5 @@
 import asyncio
+from asyncio.tasks import Task
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator, Dict, List, Optional, Tuple
 
@@ -12,6 +13,7 @@ from app.drivers.toll_loader import get_toll_loader
 from app.interface.message_converter import MessageConverterInterface
 from app.schema.ditto import DittoMessage
 from app.schema.vehicle_message import VehicleMessage
+from app.settings import settings
 from app.settings.message_converter import MessageConverterBackend
 
 
@@ -35,11 +37,19 @@ class BridgeService:
         for consumer in self._consumers:
             tasks.append(asyncio.create_task(consumer.loop()))
 
+        sender_loop_task: Optional[Task] = None
         if self._sender:
             await self._sender.start()
-            asyncio.create_task(self._sender_loop())
+            sender_loop_task = asyncio.create_task(self._sender_loop())
+
+        clear_task = asyncio.create_task(self._clear_loop())
 
         yield
+
+        clear_task.cancel()
+
+        if sender_loop_task is not None:
+            sender_loop_task.cancel()
 
         if self._sender:
             await self._sender.stop()
@@ -88,6 +98,18 @@ class BridgeService:
             ditto_message = await formatter.format(vehicle_message)
             logger.trace("Ditto message: {}", ditto_message)
             await self._send_queue.put(ditto_message)
+
+    async def _clear_loop(self):
+        logger.info("Clear loop starting")
+        sources = {
+            ms.source_name for c in settings.consumers for ms in c.message_settings
+        }
+        while True:
+            for formatter in self._envelope_formatters.values():
+                await self._send_queue.put(await formatter.delete_all(list(sources)))
+
+            logger.info("Clear complete")
+            await asyncio.sleep(settings.clear_loop_interval_s)
 
     async def run(self) -> None:
         async with self._resources():

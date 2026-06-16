@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Set
 
+from loguru import logger
 from pydantic import BaseModel, JsonValue, RootModel
 
 from app.interface.envelope_formatter import EnvelopeFormatterInterface
@@ -137,3 +138,9 @@ class DittoThingEnvelopeFormatter(EnvelopeFormatterInterface):
                 return self._handle_data(vehicle_message)  # ty:ignore[invalid-argument-type]
             case VehicleMessageType.DELETE:
                 return self._handle_delete(vehicle_message)  # ty:ignore[invalid-argument-type]
+
+    async def delete_all(self, sources: list[str]) -> DittoMessage:
+        logger.debug(
+            "Delete all for this format is not implemented due to not being necessarry."
+        )
+        return []

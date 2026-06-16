@@ -2,6 +2,7 @@ import sys
 from typing import List, Literal
 
 from loguru import logger
+from pydantic import PositiveFloat
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -41,6 +42,8 @@ class Settings(BaseSettings):
 
     ditto: DittoSettings = DittoSettings()
     log_level: LogLevel = "INFO"
+
+    clear_loop_interval_s: PositiveFloat = 150
 
     @classmethod
     def settings_customise_sources(
