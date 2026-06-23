@@ -30,8 +30,11 @@ class MQTTSenderSettings(BaseSenderSettings):
     username: Optional[str] = None
     password: Optional[str] = None
 
-    tls: bool = False
-    cafile: Optional[Path] = None
+    cafile: Path = Path("./ca.crt")
+    certfile: Path = Path("./cert.pem")
+    keyfile: Path = Path("./key.pem")
+
+    tls: bool = True
 
     publish_topic: str = "telemetry"
 
@@ -77,7 +80,7 @@ class HTTPSenderSettings(BaseSenderSettings):
         if self.username and self.password:
             url.append(f"{self.username}:{self.password}@")
 
-        url.append(f"{self.host}:{self.port}/{self.base_path.strip("/")}")
+        url.append(f"{self.host}:{self.port}/{self.base_path.strip('/')}")
         return "".join(url)
 
 
