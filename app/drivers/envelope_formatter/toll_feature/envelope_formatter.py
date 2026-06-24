@@ -80,7 +80,10 @@ class TollFeatureEnvelopeFormatter(EnvelopeFormatterInterface):
             message.append(
                 DittoProtocolEnvelope(
                     topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:toll-{settings.ditto.toll_id}/things/twin/commands/modify",
-                    headers=Headers(correlation_id=correlation_id),
+                    headers=Headers(
+                        correlation_id=correlation_id,
+                        dt4mob_historic_timestamp_override=delete_message.timestamp_override,
+                    ),
                     path=f"/features/{delete_message.message_settings.source_name}/properties/historic",
                     value=delete_message.data,
                 )

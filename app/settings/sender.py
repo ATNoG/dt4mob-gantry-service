@@ -30,9 +30,9 @@ class MQTTSenderSettings(BaseSenderSettings):
     username: Optional[str] = None
     password: Optional[str] = None
 
-    cafile: Path = Path("./ca.crt")
-    certfile: Path = Path("./cert.pem")
-    keyfile: Path = Path("./key.pem")
+    cafile: Optional[Path] = None
+    certfile: Optional[Path] = None
+    keyfile: Optional[Path] = None
 
     tls: bool = True
 

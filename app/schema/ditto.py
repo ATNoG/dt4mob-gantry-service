@@ -7,7 +7,7 @@ RequestedAck = Annotated[str, Field(pattern=r"[a-zA-Z0-9-_:]{3,100}")]
 
 
 class Headers(BaseModel):
-    model_config = ConfigDict(validate_by_name=True)
+    model_config = ConfigDict(validate_by_name=True, serialize_by_alias=True)
 
     content_type: Annotated[Optional[str], Field(alias="content-type")] = None
     correlation_id: Annotated[Optional[str], Field(alias="correlation-id")] = None
@@ -24,6 +24,9 @@ class Headers(BaseModel):
     timeout: Annotated[Optional[str], Field()] = None
     version: Annotated[Optional[int], Field(ge=1, le=2)] = None
     condition: Annotated[Optional[str], Field()] = None
+    dt4mob_historic_timestamp_override: Annotated[
+        Optional[datetime], Field(alias="dt4mob-historic-timestamp-override")
+    ] = None
 
 
 class DittoProtocolEnvelope(BaseModel):

@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from typing import Annotated, Dict, Literal, Optional
 
@@ -26,6 +27,7 @@ class VehicleDataMessage(BaseVehicleMessage):
 
 class VehicleDeleteMessage(BaseVehicleMessage):
     message_type: Literal[VehicleMessageType.DELETE] = VehicleMessageType.DELETE
+    timestamp_override: Optional[datetime] = None
     data: Optional[Dict[str, JsonValue]] = None
 
 

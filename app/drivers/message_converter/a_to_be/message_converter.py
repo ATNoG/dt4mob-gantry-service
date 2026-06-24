@@ -37,6 +37,7 @@ class AToBeMessageConverter(MessageConverterInterface):
         history_message = ORTTrackingHistoryMessage.model_validate_json(content)
         return VehicleDeleteMessage(
             id=history_message.objectID,
+            timestamp_override=history_message.triggeringTimestamp,
             data=history_message.model_dump(mode="json", exclude_unset=True),
             message_settings=message_settings,
         )
