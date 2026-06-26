@@ -27,13 +27,14 @@ class JsonFileTollLoader(TollLoaderInterface):
                             "id": toll.id,
                             "name": toll.name,
                             "coordinates": toll.coords,
+                            "dashboardUrl": toll.dashboardUrl,
                         },
                         "features": {
                             sensor: {"properties": {}} for sensor in toll.sensors
                         },
                     },
                 )
-                .model_dump_json(exclude_unset=True)
+                .model_dump_json(exclude_unset=True, exclude_none=True)
                 .encode()
             )
             for sensor in toll.sensors:
