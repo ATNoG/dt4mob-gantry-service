@@ -1,9 +1,11 @@
 import asyncio
 from contextlib import asynccontextmanager
+from datetime import datetime, timedelta
 from typing import AsyncGenerator
 
 from amqtt.client import QOS_0, ApplicationMessage, ClientConfig, MQTTClient
 from amqtt.contexts import ConnectionConfig
+from amqtt.errors import ClientError
 from loguru import logger
 
 from app.drivers.consumer import ConsumerMessage
@@ -28,6 +30,8 @@ class MQTTConsumerInterface(ConsumerInterface):
         )
         self.queue = queue
 
+        self.last_message_time: datetime = datetime.now()
+
     @asynccontextmanager
     async def _resource(self) -> AsyncGenerator[None, None]:
 
@@ -36,15 +40,31 @@ class MQTTConsumerInterface(ConsumerInterface):
             (topic, QOS_0) for topic in self.message_settings.keys()
         )
 
+        reconnect_task = asyncio.create_task(self._reconnect_watch_dog())
+
         yield
+
+        reconnect_task.cancel()
 
         await self.mqttc.disconnect()
 
     async def _messages(self) -> AsyncGenerator[ApplicationMessage, None]:
         while True:
-            msg = await self.mqttc.deliver_message()
-            if msg:
-                yield msg
+            try:
+                msg = await self.mqttc.deliver_message()
+                if msg is not None:
+                    yield msg
+            except ClientError:
+                logger.warning("Consumer disconnected, attempting to reconnect")
+                await self.mqttc.connect()
+
+    async def _reconnect_watch_dog(self):
+        while True:
+            logger.debug("Watching")
+            if (datetime.now() - self.last_message_time) > timedelta(minutes=5):
+                logger.info("Disconnecting consumer")
+                await self.mqttc.disconnect()
+            await asyncio.sleep(150)
 
     async def loop(self) -> None:
         async with self._resource():
@@ -54,6 +74,7 @@ class MQTTConsumerInterface(ConsumerInterface):
 
                 message_config = self.message_settings[msg.topic]
 
+                self.last_message_time = datetime.now()
                 await self.queue.put(
                     ConsumerMessage(
                         message_settings=message_config,

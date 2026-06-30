@@ -102,6 +102,16 @@ class DittoThingEnvelopeFormatter(EnvelopeFormatterInterface):
             message.append(update_envelope)
             message.append(update_expiry)
 
+            if data_message.geotile is not None:
+                message.append(
+                    DittoProtocolEnvelope(
+                        topic=f"{settings.ditto.namespace}/{settings.ditto.subject}:{data_message.prefix_id()}/things/twin/commands/modify",
+                        headers=Headers(correlation_id=correlation_id),
+                        path="/attributes/geotile",
+                        value=data_message.geotile,
+                    )
+                )
+
         if future_thing.attributes.id not in self.future_ids:
             message.append(future_envelope)
             delete_ids = self._add_future_id(future_thing.attributes.id)

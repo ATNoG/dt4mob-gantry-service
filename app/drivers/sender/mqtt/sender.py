@@ -1,3 +1,7 @@
+import asyncio
+from asyncio import Task
+from typing import Optional
+
 from amqtt.client import ClientConfig, MQTTClient
 from amqtt.contexts import ConnectionConfig
 from loguru import logger
@@ -19,11 +23,23 @@ class MQTTSenderInterface(SenderInterface):
                 ),
             )
         )
+        self._reconnect_task: Optional[Task] = None
+
+    async def _reconnect_loop(self):
+        while True:
+            await asyncio.sleep(150)
+            logger.debug("Attempt manual reconnection")
+            await self.mqttc.disconnect()
+            await self.mqttc.connect()
 
     async def start(self) -> None:
         await self.mqttc.connect()
+        self._reconnect_task = asyncio.create_task(self._reconnect_loop())
 
     async def stop(self) -> None:
+        if self._reconnect_task:
+            self._reconnect_task.cancel()
+            self._reconnect_task = None
         await self.mqttc.disconnect()
 
     async def send(self, payload: bytes) -> None:

@@ -23,6 +23,7 @@ class BaseVehicleMessage(BaseModel):
 class VehicleDataMessage(BaseVehicleMessage):
     message_type: Literal[VehicleMessageType.DATA] = VehicleMessageType.DATA
     data: Dict[str, JsonValue]
+    geotile: Optional[int] = None
 
 
 class VehicleDeleteMessage(BaseVehicleMessage):

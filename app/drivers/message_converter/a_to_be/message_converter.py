@@ -14,6 +14,7 @@ from app.schema.vehicle_message import (
     VehicleMessage,
 )
 from app.settings.message import AToBeMessageSettings, AToBeMessageType
+from app.utils.geo import get_geotile
 
 
 class AToBeMessageConverter(MessageConverterInterface):
@@ -28,6 +29,10 @@ class AToBeMessageConverter(MessageConverterInterface):
         return VehicleDataMessage(
             id=vehicle_message.objectID,
             data=vehicle_message.model_dump(mode="json", exclude_unset=True),
+            geotile=get_geotile(
+                vehicle_message.absoluteCoordinates.latitude,
+                vehicle_message.absoluteCoordinates.longitude,
+            ),
             message_settings=message_settings,
         )
 

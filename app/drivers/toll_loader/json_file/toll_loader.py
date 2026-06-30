@@ -6,6 +6,7 @@ from app.schema.ditto import DittoProtocolEnvelope
 from app.schema.toll import Tolls
 from app.settings import settings
 from app.settings.toll_loader import JsonFileTollLoaderSettings
+from app.utils.geo import get_geotile
 
 
 class JsonFileTollLoader(TollLoaderInterface):
@@ -27,6 +28,9 @@ class JsonFileTollLoader(TollLoaderInterface):
                             "id": toll.id,
                             "name": toll.name,
                             "coordinates": toll.coords,
+                            "geotile": get_geotile(
+                                toll.coords.latitude, toll.coords.longitude
+                            ),
                             "dashboardUrl": toll.dashboardUrl,
                         },
                         "features": {
