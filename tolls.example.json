@@ -4,7 +4,8 @@
       "id": 0,
       "coords": { "latitude": 0.0, "longitude": 0.0 },
       "name": "Some Toll",
-      "sensors": ["camera", "lidar"]
+      "sensors": ["camera", "lidar"],
+      "dashboardUrl": "https://example.com/grafana/gantry"
     }
   ]
 }

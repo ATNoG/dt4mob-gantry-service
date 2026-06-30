@@ -1,0 +1,15 @@
+services:
+  gantry-service:
+    build: .
+    container_name: gantry-service
+    volumes:
+      - ./config.toml:/app/config.toml:ro
+      - ./ca.crt:/app/ca.crt:ro
+      - ./tolls.json:/app/tolls.json:ro
+      # Include other volumes as needed (i.e. certifcates, toll info, etc)
+    restart: unless-stopped
+    ports:
+      # Port forward webhook if needed
+      - 8000:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

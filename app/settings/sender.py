@@ -57,7 +57,7 @@ class HTTPSenderSettings(BaseSenderSettings):
     backend: Literal[SenderBackend.HTTP] = SenderBackend.HTTP
 
     host: NonEmptyStr = "localhost"
-    port: Annotated[int, Field(ge=0, le=65535)] = 1883
+    port: Annotated[int, Field(ge=0, le=65535)] = 443
 
     username: Optional[str] = None
     password: Optional[str] = None

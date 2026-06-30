@@ -6,6 +6,9 @@
 # Options: "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "TRACE"
 log_level = "INFO" # Literal String
 
+# Seconds between periodic Ditto cleanup sweeps
+# clear_loop_interval_s = 150 # Positive Float
+
 # ------------------------------------------
 # Ditto Settings
 # ------------------------------------------
@@ -34,6 +37,13 @@ toll-feature = false # Boolean
 ditto-thing = false  # Boolean
 
 # ------------------------------------------
+# Ditto Thing Formatter Options
+# (only used if ditto-thing formatter is enabled)
+# ------------------------------------------
+[ditto_thing_settings]
+deferred_creation_offset = 10 # Positive Integer
+
+# ------------------------------------------
 # Toll Loader Settings
 # ------------------------------------------
 [toll_loader]
@@ -57,14 +67,16 @@ backend = "disabled" # Discriminator
 # port = 1883                 # Integer (0-65535)
 # username = ""               # Optional String (null)
 # password = ""               # Optional String (null)
-# tls = false                 # Boolean
+# tls = true                  # Boolean (default: true)
 # cafile = ""                 # Optional Path String
+# certfile = ""               # Optional Path String
+# keyfile = ""                # Optional Path String
 # publish_topic = "telemetry" # String
 
 # HTTP Sender Options (only used if backend="http")
 # backend = "http"
 # host = "localhost"          # Non-empty String
-# port = 1883                 # Integer (0-65535)
+# port = 443                  # Integer (0-65535)
 # username = ""               # Optional String (null)
 # password = ""               # Optional String (null)
 # tls = false                 # Boolean
@@ -96,7 +108,6 @@ expected_message_type = "a-to-be" # Discriminator
 enabled = true                    # Boolean
 topic = "required_topic"          # Non-empty String
 source_name = "required_name"     # Non-empty String
-source_prefix = "required_prefix" # Non-empty String
 allowed_ditto_formats = []        # Set of Strings ("toll-feature", "ditto-thing")
 atobe_type = "realtime"           # Literal String ("realtime", "history")
 
@@ -105,7 +116,6 @@ expected_message_type = "outsight" # Discriminator
 enabled = true                     # Boolean
 topic = "required_topic"           # Non-empty String
 source_name = "required_name"      # Non-empty String
-source_prefix = "required_prefix"  # Non-empty String
 allowed_ditto_formats = []         # Set of Strings
 
 # Example 2: Webhook Consumer
