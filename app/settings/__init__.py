@@ -1,3 +1,4 @@
+import logging
 import sys
 from typing import List, Literal
 
@@ -64,5 +65,20 @@ settings = Settings()
 
 logger.remove()
 logger.add(sys.stdout, level=settings.log_level)
+
+
+class InterceptHandler(logging.Handler):
+    def emit(self, record) -> None:
+        try:
+            level = logger.level(record.levelname).name
+        except ValueError:
+            level = record.levelno
+
+        logger.patch(lambda r: r.update(name=record.name)).log(
+            level, record.getMessage()
+        )
+
+
+logging.basicConfig(handlers=[InterceptHandler()], level=logging.INFO, force=True)
 
 logger.debug(settings)

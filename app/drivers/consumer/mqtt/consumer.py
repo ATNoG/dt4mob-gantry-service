@@ -6,6 +6,7 @@ from typing import AsyncGenerator
 from amqtt.client import QOS_0, ApplicationMessage, ClientConfig, MQTTClient
 from amqtt.contexts import ConnectionConfig
 from amqtt.errors import ClientError
+from amqtt.utils import gen_client_id
 from loguru import logger
 
 from app.drivers.consumer import ConsumerMessage
@@ -62,8 +63,12 @@ class MQTTConsumerInterface(ConsumerInterface):
         while True:
             logger.debug("Watching")
             if (datetime.now() - self.last_message_time) > timedelta(minutes=5):
-                logger.info("Disconnecting consumer")
+                logger.info("Reconnect consumer")
                 await self.mqttc.disconnect()
+                self.mqttc.client_id = gen_client_id()
+                logger.debug(
+                    "Connect code: {}", await self.mqttc.connect(cleansession=True)
+                )
             await asyncio.sleep(150)
 
     async def loop(self) -> None:
